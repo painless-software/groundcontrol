@@ -1,0 +1,3 @@
+.vagrant/
+*-console.log
+playbook.retry

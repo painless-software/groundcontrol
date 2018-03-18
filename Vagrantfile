@@ -3,8 +3,11 @@
 #
 # Vagrantfile docs: https://docs.vagrantup.com
 
-# ensure Ansible plugins are installed
-['nickjj.docker'].each do |role|
+ansible_roles = [
+  'nickjj.docker',
+  'kbrebanov.libvirt',
+]
+ansible_roles.each do |role|
   system("ansible-galaxy install #{role}")
 end
 

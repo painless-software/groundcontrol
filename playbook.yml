@@ -3,3 +3,4 @@
 
   roles:
     - { role: nickjj.docker, become: True, tags: docker }
+    - { role: kbrebanov.libvirt, libvirt_qemu_vnc_listen: 0.0.0.0 }

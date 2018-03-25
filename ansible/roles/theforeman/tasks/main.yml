@@ -1,0 +1,28 @@
+---
+- name: install Puppet 5
+  package:
+    name: https://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
+    state: present
+  become: true
+
+- name: install EPEL (Extra Packages for Enterprise Linux)
+  package:
+    name: http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: present
+  become: true
+
+- name: add Foreman repos
+  package:
+    name: https://yum.theforeman.org/releases/1.17/el7/x86_64/foreman-release.rpm
+    state: present
+  become: true
+
+- name: download Foreman installer
+  package:
+    name: foreman-installer
+    state: latest
+  become: true
+
+- name: run foreman-installer non-interactively
+  command: foreman-installer -v
+  become: true

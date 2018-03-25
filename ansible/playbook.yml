@@ -1,0 +1,5 @@
+---
+- name: Set up a complete Groundcontrol Genesis system
+  hosts: all
+  roles:
+    - theforeman

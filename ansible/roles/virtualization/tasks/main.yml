@@ -1,0 +1,4 @@
+---
+- name: install libvirt
+  package: name=libvirt state=present
+  become: true

@@ -24,5 +24,5 @@
   become: true
 
 - name: run foreman-installer non-interactively
-  command: foreman-installer -v
+  command: foreman-installer -v --foreman-server-port=8080 --foreman-server-ssl-port=8443 --foreman-admin-password={{ ADMIN_PASSWORD }}
   become: true

@@ -22,11 +22,13 @@ Vagrant.configure("2") do |config|
   # for more boxes see https://vagrantcloud.com/search
   config.vm.box = "centos/7"
   config.vm.hostname = "groundcontrol.painless.software"
-  config.vm.network :forwarded_port, host: 8080, guest: 80, auto_correct: true
-  config.vm.network :forwarded_port, host: 8443, guest: 443, auto_correct: true
+  config.vm.network :forwarded_port, host: 8443, guest: 8443, auto_correct: true
+  config.vm.network :forwarded_port, host: 8444, guest: 443, auto_correct: true
   config.vm.post_up_message = "Groundcontrol virtual machine is ready
     The Foreman:
         https://127.0.0.1:8443/
+    FreeIPA:
+        https://127.0.0.1:8444/
     Control commands:
         vagrant ssh    ..... enter VM
         vagrant halt   ..... stop VM

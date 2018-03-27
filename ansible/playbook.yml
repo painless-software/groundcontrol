@@ -2,5 +2,12 @@
 - name: Set up a complete Groundcontrol Genesis system
   hosts: all
   roles:
-    - theforeman
     - virtualization
+    - identitymanagement
+    - theforeman
+  vars:
+    HOSTNAME: '{{ ansible_hostname }}'
+    FQDN: '{{ ansible_fqdn }}'
+    DOMAIN: '{{ ansible_domain }}'
+    IP_ADDRESS: '{{ ansible_default_ipv4.address }}'
+    ADMIN_PASSWORD: any-password-is-a-vulnerability

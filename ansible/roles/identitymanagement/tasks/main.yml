@@ -1,0 +1,27 @@
+---
+- name: ensure hostname doesn't resolve to localhost
+  replace:
+    path: /etc/hosts
+    regexp: '^127.0.0.1\t{{ FQDN }}\t{{ HOSTNAME }}'
+    replace: '{{ IP_ADDRESS }}\t{{ FQDN }}\t{{ HOSTNAME }}'
+    backup: no
+  become: true
+
+- name: install FreeIPA server
+  package: name=freeipa-server
+  become: true
+
+- name: is FreeIPA already configured?
+  stat: path=/var/log/ipaserver-install.log
+  register: install_log
+
+- name: configure FreeIPA server
+  command: ipa-server-install --unattended --admin-password={{ ADMIN_PASSWORD }} --ds-password={{ ADMIN_PASSWORD }} --hostname={{ FQDN }} --domain={{ DOMAIN }} --realm={{ DOMAIN|upper }}
+  become: true
+  when: not install_log.stat.exists
+  debug: msg='FreeIPA server already configured. Skipping.'
+    when: not install_log.stat.exists
+
+- name: ensure proper config of admin (auth to Kerberos realm)
+  shell: echo '{{ ADMIN_PASSWORD }}' | kinit admin
+  become: true

@@ -5,25 +5,31 @@
   package:
     name: https://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
     state: present
+  become: true
 
 - name: Install EPEL (Extra Packages for Enterprise Linux)
   package:
     name: http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     state: present
+  become: true
 
 - name: Add Forman repos
   package:
     name: https://yum.theforeman.org/releases/1.17/el7/x86_64/foreman-release.rpm
     state: present
+  become: true
 
 - name: Install foreman-installer package
   package: name=foreman-installer state=latest
+  become: true
 
 - name: Run foreman-installer
   command: foreman-installer -v --foreman-server-port=8009 --foreman-server-ssl-port=9000 --foreman-admin-password={{ ADMIN_PASSWORD }}
+  become: true
 
 - name: Don't listen on port 80 with webserver
   lineinfile: dest=/etc/httpd/conf/ports.conf regexp='^Listen 80$' state=absent
+  become: true
 
 - name: Remove webserver default configuration
   file: path=/etc/httpd/conf.d/15-default.conf state=absent

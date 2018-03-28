@@ -1,7 +1,6 @@
 ---
 - name: Set up a complete Groundcontrol Genesis system
   hosts: all
-  remote_user: root
   roles:
     - virtualization
     - identitymanagement

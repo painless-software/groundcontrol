@@ -12,3 +12,4 @@
     - virt-install
     - virt-manager
     - virt-viewer
+  become: true

@@ -13,7 +13,7 @@
     state: present
   become: true
 
-- name: Add Forman repos
+- name: Add Foreman repos
   package:
     name: https://yum.theforeman.org/releases/1.17/el7/x86_64/foreman-release.rpm
     state: present
@@ -24,17 +24,38 @@
   become: true
 
 - name: Run foreman-installer
-  command: foreman-installer -v --foreman-server-port=8009 --foreman-server-ssl-port=9000 --foreman-admin-password={{ ADMIN_PASSWORD }}
+  command: foreman-installer -v --foreman-admin-password={{ ADMIN_PASSWORD }}
   become: true
 
-- name: Don't listen on port 80 with webserver
-  lineinfile: dest=/etc/httpd/conf/ports.conf regexp='^Listen 80$' state=absent
+- name: Stop webserver
+  service: name=httpd state=stopped
   become: true
 
 - name: Remove webserver default configuration
   file: path=/etc/httpd/conf.d/15-default.conf state=absent
   become: true
 
-- name: Restart webserver
-  service: name=httpd state=restarted
+- name: Use alternative ports for HTTP/SSL
+  lineinfile: regexp='{{ item.regexp }}' line='{{ item.line }}' dest=/etc/httpd/conf/ports.conf
+  with_items:
+    - { regexp: '^Listen 80$', line: 'Listen 8009' }
+    - { regexp: '^Listen 443$', line: 'Listen 9000' }
+  become: true
+
+- name: Adjust ports in HTTP VirtualHost
+  lineinfile: regexp='{{ item.regexp }}' line='{{ item.line }}' backrefs=yes dest=/etc/httpd/conf.d/05-foreman.conf
+  with_items:
+    - { regexp: '^(.*):80>$', line: '\1:8009>' }  # <VirtualHost>
+    - { regexp: '^(.*):80$', line: '\1:8009' }  # PassengerPreStart
+  become: true
+
+- name: Adjust ports in SSL VirtualHost
+  lineinfile: regexp='{{ item.regexp }}' line='{{ item.line }}' backrefs=yes dest=/etc/httpd/conf.d/05-foreman-ssl.conf
+  with_items:
+    - { regexp: '^(.*):443>$', line: '\1:9000>' }  # <VirtualHost>
+    - { regexp: '^(.*):443$', line: '\1:9000' }  # PassengerPreStart
+  become: true
+
+- name: Start webserver again
+  service: name=httpd state=started
   become: true

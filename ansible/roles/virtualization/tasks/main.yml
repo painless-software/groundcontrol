@@ -1,4 +1,14 @@
 ---
-- name: Install libvirt
-  package: name=libvirt state=present
-  become: true
+# https://lifeandshell.com/foreman-provision-to-bare-and-libvirtd-centos7-foreman-libvirtd-kvm/
+
+- name: Install libvirt packages
+  package: state=present name={{ item }}
+  with_items:
+    - qemu-img
+    - qemu-kvm
+    - libvirt
+    - libvirt-client
+    - libvirt-python
+    - virt-install
+    - virt-manager
+    - virt-viewer

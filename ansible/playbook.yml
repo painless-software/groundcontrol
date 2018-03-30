@@ -3,8 +3,8 @@
   hosts: all
   roles:
     - virtualization
-    - identitymanagement
     - encfrontend
+    - identitymanagement
   vars:
     HOSTNAME: '{{ ansible_hostname }}'
     FQDN: '{{ ansible_fqdn }}'

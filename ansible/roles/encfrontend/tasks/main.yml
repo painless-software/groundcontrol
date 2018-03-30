@@ -36,24 +36,24 @@
   become: true
 
 - name: Use alternative ports for HTTP/SSL
-  lineinfile: regexp='{{ item.regexp }}' line='{{ item.line }}' dest=/etc/httpd/conf/ports.conf
+  replace: dest=/etc/httpd/conf/ports.conf regexp='{{ item.regexp }}' replace='{{ item.replace }}'
   with_items:
-    - { regexp: '^Listen 80$', line: 'Listen 8009' }
-    - { regexp: '^Listen 443$', line: 'Listen 9000' }
+    - { regexp: '^Listen 80$', replace: 'Listen 8009' }
+    - { regexp: '^Listen 443$', replace: 'Listen 9000' }
   become: true
 
 - name: Adjust ports in HTTP VirtualHost
-  lineinfile: regexp='{{ item.regexp }}' line='{{ item.line }}' backrefs=yes dest=/etc/httpd/conf.d/05-foreman.conf
+  replace: dest=/etc/httpd/conf.d/05-foreman.conf regexp='{{ item.regexp }}' replace='{{ item.replace }}'
   with_items:
-    - { regexp: '^(.*):80>$', line: '\1:8009>' }  # <VirtualHost>
-    - { regexp: '^(.*):80$', line: '\1:8009' }  # PassengerPreStart
+    - { regexp: '^(.*):80>$', replace: '\1:8009>' }  # <VirtualHost>
+    - { regexp: '^(.*):80$', replace: '\1:8009' }  # PassengerPreStart
   become: true
 
 - name: Adjust ports in SSL VirtualHost
-  lineinfile: regexp='{{ item.regexp }}' line='{{ item.line }}' backrefs=yes dest=/etc/httpd/conf.d/05-foreman-ssl.conf
+  replace: dest=/etc/httpd/conf.d/05-foreman-ssl.conf regexp='{{ item.regexp }}' replace='{{ item.replace }}'
   with_items:
-    - { regexp: '^(.*):443>$', line: '\1:9000>' }  # <VirtualHost>
-    - { regexp: '^(.*):443$', line: '\1:9000' }  # PassengerPreStart
+    - { regexp: '^(.*):443>$', replace: '\1:9000>' }  # <VirtualHost>
+    - { regexp: '^(.*):443$', replace: '\1:9000' }  # PassengerPreStart
   become: true
 
 - name: Start webserver again

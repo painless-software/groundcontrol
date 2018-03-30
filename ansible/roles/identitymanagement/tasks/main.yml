@@ -6,7 +6,6 @@
     path: /etc/hosts
     regexp: '^127.0.0.1\t{{ FQDN }}\t{{ HOSTNAME }}'
     replace: '{{ IP_ADDRESS }}\t{{ FQDN }}\t{{ HOSTNAME }}'
-    backup: no
   become: true
 
 - name: Install FreeIPA server
@@ -21,4 +20,16 @@
 
 - name: Ensure admin config / auth to Kerberos realm
   shell: echo '{{ ADMIN_PASSWORD }}' | kinit admin
+  become: true
+
+- name: Disable redirects to hard-coded domain
+  replace: path=/etc/httpd/conf.d/ipa-rewrite.conf regexp='{{ item.regexp }}' replace='{{ item.replace }}'
+  with_items:
+    - { regexp: '^(RewriteRule \^/\$) (https://.*)(/ipa/ui.*)$', replace: '\1 \3' }
+    - { regexp: '^(RewriteRule \^\/ipa\/\(.*)$', replace: '#\1' }
+    - { regexp: '^(RewriteCond .*)$', replace: '#\1' }
+  become: true
+
+- name: Activate webserver configuration changes
+  service: name=httpd state=reloaded
   become: true

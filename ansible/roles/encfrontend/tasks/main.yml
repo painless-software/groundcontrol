@@ -27,35 +27,6 @@
   command: foreman-installer -v --foreman-admin-password={{ ADMIN_PASSWORD }}
   become: true
 
-- name: Stop webserver
-  service: name=httpd state=stopped
-  become: true
-
 - name: Remove webserver default configuration
   file: path=/etc/httpd/conf.d/15-default.conf state=absent
-  become: true
-
-- name: Use alternative ports for HTTP/SSL
-  replace: dest=/etc/httpd/conf/ports.conf regexp='{{ item.regexp }}' replace='{{ item.replace }}'
-  with_items:
-    - { regexp: '^Listen 80$', replace: 'Listen 8009' }
-    - { regexp: '^Listen 443$', replace: 'Listen 9000' }
-  become: true
-
-- name: Adjust ports in HTTP VirtualHost
-  replace: dest=/etc/httpd/conf.d/05-foreman.conf regexp='{{ item.regexp }}' replace='{{ item.replace }}'
-  with_items:
-    - { regexp: '^(.*):80>$', replace: '\1:8009>' }  # <VirtualHost>
-    - { regexp: '^(.*):80$', replace: '\1:8009' }  # PassengerPreStart
-  become: true
-
-- name: Adjust ports in SSL VirtualHost
-  replace: dest=/etc/httpd/conf.d/05-foreman-ssl.conf regexp='{{ item.regexp }}' replace='{{ item.replace }}'
-  with_items:
-    - { regexp: '^(.*):443>$', replace: '\1:9000>' }  # <VirtualHost>
-    - { regexp: '^(.*):443$', replace: '\1:9000' }  # PassengerPreStart
-  become: true
-
-- name: Start webserver again
-  service: name=httpd state=started
   become: true

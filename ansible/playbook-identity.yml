@@ -1,0 +1,11 @@
+---
+- name: Set up identity management for Groundcontrol Genesis
+  hosts: all
+  roles:
+    - identitymanagement
+  vars:
+    HOSTNAME: '{{ ansible_hostname }}'
+    FQDN: '{{ ansible_fqdn }}'
+    DOMAIN: '{{ ansible_domain }}'
+    IP_ADDRESS: '{{ ansible_default_ipv4.address }}'
+    ADMIN_PASSWORD: any-password-is-a-vulnerability

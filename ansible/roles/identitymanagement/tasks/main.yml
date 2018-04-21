@@ -30,6 +30,29 @@
     - { regexp: '^(RewriteCond .*)$', replace: '#\1' }
   become: true
 
+- name: Deactivate HTTP RefererError
+  replace:
+    path: '/usr/lib/python2.7/site-packages/ipaserver/rpcserver.py'
+    regexp: '{{ item }}'
+    replace: '\1pass  # \2'
+  with_items:
+    - "^([ ]*)(return self.marshal\\(result, RefererError\\(referer)"
+  become: true
+
 - name: Activate webserver configuration changes
   service: name=httpd state=reloaded
   become: true
+
+- name: Create a couple of demo accounts (FreeIPA)
+  ipa_user:
+    uid: '{{ item.name }}'
+    displayname: '{{ item.givenname }} {{ item.surname }}'
+    givenname: '{{ item.givenname }}'
+    sn: '{{ item.surname }}'
+    password: '{{ item.password }}'
+    ipa_host: '{{ FQDN }}'
+    ipa_pass: '{{ ADMIN_PASSWORD }}'
+    validate_certs: no
+  with_items:
+    - { name: 'jane.doe', givenname: 'Jane', surname: 'Doe', password: 'changeme' }
+    - { name: 'john.doe', givenname: 'John', surname: 'Doe', password: 'changeme' }

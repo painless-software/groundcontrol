@@ -1,3 +1,4 @@
 .vagrant/
 *-console.log
+Pipfile*
 playbook*.retry

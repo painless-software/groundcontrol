@@ -2,7 +2,7 @@
 - name: Set up a ENC frontend and virtualization for Groundcontrol Genesis
   hosts: all
   roles:
-    - virtualization
+    # - virtualization
     - encfrontend
   vars:
     HOSTNAME: '{{ ansible_hostname }}'

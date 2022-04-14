@@ -1,32 +1,42 @@
 ---
-# https://theforeman.org/manuals/1.17/index.html#2.1Installation
+# https://theforeman.org/manuals/3.2/index.html#2.1Installation
 
-- name: Install Puppet 5
-  package:
-    name: https://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
-    state: present
-  become: true
+- name: Set up The Foreman
+  block:
 
-- name: Install EPEL (Extra Packages for Enterprise Linux)
-  package:
-    name: http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    state: present
-  become: true
+    - name: Puppet 7
+      command: dnf install -y https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+      # dnf:
+      #   name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+      #   state: present
 
-- name: Add Foreman repos
-  package:
-    name: https://yum.theforeman.org/releases/1.17/el7/x86_64/foreman-release.rpm
-    state: present
-  become: true
+    - name: Enable Ruby module (1/2)
+      command: dnf module -y reset ruby
 
-- name: Install foreman-installer package
-  package: name=foreman-installer state=latest
-  become: true
+    - name: Enable Ruby module (2/2)
+      command: dnf module -y enable ruby:2.7
+      # dnf:
+      #   name: '@ruby:2.7'
+      #   state: present
 
-- name: Run foreman-installer
-  command: foreman-installer -v --foreman-admin-password={{ ADMIN_PASSWORD }}
-  become: true
+    - name: Add Foreman repos
+      command: dnf install -y https://yum.theforeman.org/releases/3.2/el8/x86_64/foreman-release.rpm
+      # dnf:
+      #   name: https://yum.theforeman.org/releases/3.2/el8/x86_64/foreman-release.rpm
+      #   state: present
 
-- name: Remove webserver default configuration
-  file: path=/etc/httpd/conf.d/15-default.conf state=absent
+    - name: Install foreman-installer package
+      command: dnf install -y foreman-installer
+      # package:
+      #   name: foreman-installer
+      #   state: latest
+
+    - name: Run foreman-installer
+      command: foreman-installer -v -s --foreman-initial-admin-password={{ ADMIN_PASSWORD }}
+
+    - name: Remove webserver default configuration
+      file:
+        path: /etc/httpd/conf.d/15-default.conf
+        state: absent
+
   become: true
